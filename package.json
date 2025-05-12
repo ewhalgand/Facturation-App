@@ -1,0 +1,21 @@
+{
+  "name": "facturation-freelance-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:all": "docker-compose -f apps/backend/docker-compose.yml up -d && turbo run dev",
+    "stop": "docker-compose -f apps/backend/docker-compose.yml down"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "turbo": "^2.5.3"
+  },
+  "dependencies": {
+    "better-auth": "^1.2.7"
+  }
+}
