@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { prisma } from "../db/client.js";
 import bcrypt from "bcrypt";
+import { auth } from "../auth/auth.js";
 
 const signup = new Hono();
 
@@ -27,25 +28,26 @@ signup.post("/", async (c) => {
     return c.json({ error: "Utilisateur déjà existant" }, 400);
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  try {
+    const res = await auth.api.signUpEmail({
+      body: { email, password, name },
+      asResponse: true,
+    });
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      emailVerified: false,
-      image: null,
-      accounts: {
-        create: {
-          accountId: email,
-          providerId: "local",
-          password: hashedPassword,
-        },
-      },
-    },
-  });
+    if (!res.ok) {
+      const errData = await res.json();
+      return c.json({ error: errData.error.message }, 400);
+    }
 
-  return c.json({ message: "Inscription réussie !", data: user });
+    const data = await res.json();
+    return c.json({ message: "Inscription réussie !", data }, 201);
+  } catch (err) {
+    if (err instanceof Error) {
+      return c.json({ error: err.message }, 500);
+    }
+
+    return c.json({ error: "Une erreur inconnue est survenue" }, 500);
+  }
 });
 
 export default signup;
