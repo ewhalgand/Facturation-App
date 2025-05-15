@@ -8,7 +8,9 @@
     "dev:all": "docker-compose -f apps/backend/docker-compose.yml up -d && turbo run dev",
     "stop": "docker-compose -f apps/backend/docker-compose.yml down"
   },
-  "keywords": [],
+  "keywords": [
+    
+  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.10.0",
@@ -17,5 +19,10 @@
   },
   "dependencies": {
     "better-auth": "^1.2.7"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
