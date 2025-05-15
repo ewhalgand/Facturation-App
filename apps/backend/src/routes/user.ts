@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import getUser from "../controllers/userController.js";
+import userController from "../controllers/userController.js";
 
 const userRoute = new Hono();
 
-userRoute.route("/me", getUser);
+userRoute.route("/me", userController);
 
 export default userRoute;

@@ -3,9 +3,9 @@ import { prisma } from "../db/client.js";
 import type { Session } from "better-auth";
 import { auth } from "../auth/auth.js";
 
-const getUser = new Hono();
+const userController = new Hono();
 
-getUser.delete("/", async (c: Context) => {
+userController.delete("/", async (c: Context) => {
   const { session } = (await auth.api.getSession({
     headers: c.req.raw.headers,
   })) as { session: Session };
@@ -14,11 +14,21 @@ getUser.delete("/", async (c: Context) => {
     return c.json({ error: "Non autorisé" }, 401);
   }
 
-  await prisma.user.delete({
-    where: { id: session.userId },
-  });
+  const userId = session.userId;
 
-  return c.json({ message: "Utilisateur supprimé avec succès !" }, 200);
+  if (!userId) {
+    return c.json({ error: "Utilisateur non trouvé dans la session" }, 401);
+  }
+
+  try {
+    await prisma.user.delete({
+      where: { id: session.userId },
+    });
+
+    return c.json({ message: "Utilisateur supprimé avec succès !" }, 200);
+  } catch (err) {
+    return c.json({ error: "Erreur lors de la suppression" }, 500);
+  }
 });
 
-export default getUser;
+export default userController;
